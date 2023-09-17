@@ -58,7 +58,7 @@ jobs:
       - name: modify the image
         run: |
           git config user.email aspdiscovery@outlook.com
-          git config user.name aspdiscovery
+          git config user.name aspdiscovery123
           pwd
           cat deployment.yaml
           pwd
