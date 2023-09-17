@@ -51,16 +51,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      name: Changing the deployment of Git repo
       with:
         repository: 'aspdiscovery123/mainfest'
         token: ${{ secrets.GIT_PASSWORD }}
+
+    # Add debugging step to check credentials
+    - name: Debug GitHub Credentials
+      run: |
+        echo "GIT_USERNAME: ${{ secrets.GIT_USERNAME }}"
+        echo "GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}"
+        git config --global -l
+        git remote -v
+        git log -n 5
+
     - name: Modify the image
       run: |
-        git config --global user.email "aspdiscovery@outlook.com"
-        git config --global user.name "aspdiscovery123"
-        sed -i "s+aspdiscovery123/images.*+aspdiscovery123/images:app-$RUN_NUMBER+g" deployment.yaml
+        git config --global user.email aspdiscovery@outlook.com
+        git config --global user.name aspdiscovery123
+        pwd
+        cat deployment.yaml
+        pwd
+        sed -i "s+aspdiscovery/images.*+aspdicovery/images:app-$RUN_NUMBER+g" deployment.yaml
+        cat deployment.yaml
         git add .
         git commit -m "Done by GitHub Actions Job changemanifest: ${{ github.run_number }}"
-        git push origin main
+        GIT_PASSWORD="$GIT_TOKEN" git push origin main
       env:
+        GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
         RUN_NUMBER: ${{ github.run_number }}
