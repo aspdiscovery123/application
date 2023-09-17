@@ -55,30 +55,28 @@ jobs:
               push: true
               tags: aspdiscovery/images:app-${{ github.run_number }}
   modifygit:
-    needs: docker
+    needs: build # Make sure to change this to the appropriate job ID that this job depends on
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        name: changing the deployment of git repo
-        with:
-          repository: 'aspdiscovery123/mainfest'
-          token: ${{ secrets.GIT_PASSWORD }}
-      - name: modify the image
-        run: |
-          git config user.email aspdiscovery@outlook.com
-          git config user.name aspdiscovery123
-          echo "okay 1."
-          pwd
-          cat deployment.yaml
-          pwd
-          sed -i "s+aspdiscovery/images.*+aspdiscovery/images:app-$RUN_NUMBER+g" deployment.yaml
-          echo "okay 2."
-          cat deployment.yaml
-          git add .
-          git commit -m 'Done  by Github Actions   Job changemanifest: ${{ github.run_number }}'
-          echo "okay 3."
-          git push origin main
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
-          RUN_NUMBER: ${{ github.run_number }}
+    - uses: actions/checkout@v2 # Change this to v3 if available
+      name: changing the deployment of git repo
+      with:
+        repository: 'aspdiscovery123/mainfest'
+        token: ${{ secrets.GIT_PASSWORD }}
+
+    - name: modify the image
+      run: |
+        git config user.email aspdiscovery@outlook.com
+        git config user.name aspdiscovery123
+        pwd
+        cat deployment.yaml
+        pwd
+        sed -i "s+aspdiscovery123/images.*+aspdiscovery123/images:app-$RUN_NUMBER+g" deployment.yaml
+        cat deployment.yaml
+        git add .
+        git commit -m 'Done by Github Actions Job changemanifest: ${{ github.run_number }}'
+        git push origin main
+      env:
+        GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+        GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+        RUN_NUMBER: ${{ github.run_number }}
